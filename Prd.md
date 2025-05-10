@@ -32,7 +32,7 @@ The extension allows users to press a keyboard shortcut to capture the subtitle 
   - Implement screenshot mechanism compatible with webpage content (canvas or getDisplayMedia)
   - Ensure the capture process is fast and doesn't interrupt video playback
 
-### 5.2 OCR Text Recognition
+<!-- ### 5.2 OCR Text Recognition
 - **Priority:** High
 - **Description:** Process the captured image to extract subtitle text
 - **Requirements:**
@@ -42,7 +42,6 @@ The extension allows users to press a keyboard shortcut to capture the subtitle 
   - Process the image and extract text within 1 second
   - Achieve text recognition accuracy above 85%
 
-<!-- 
 ### 5.3 Extension Popup Interface
 - **Priority:** Medium
 - **Description:** Provide a simple interface to trigger the capture and display results
