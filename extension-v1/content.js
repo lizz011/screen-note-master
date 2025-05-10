@@ -4,12 +4,18 @@
 let isSelecting = false;
 let startX, startY, currentX, currentY;
 let selectionElement = null;
+let isSelectionActive = false; // Track if selection overlay is active
 
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'selectSubtitleRegion') {
-    startRegionSelection();
-    sendResponse({ status: 'selecting' });
+    // Only start selection if not already active
+    if (!isSelectionActive) {
+      startRegionSelection();
+      sendResponse({ status: 'selecting' });
+    } else {
+      sendResponse({ status: 'already_selecting' });
+    }
   }
   
   if (message.action === 'captureSubtitleRegion') {
@@ -22,8 +28,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Function to start region selection
 function startRegionSelection() {
+  isSelectionActive = true; // Mark selection as active
+  
   // Create overlay for selection
   const overlay = document.createElement('div');
+  overlay.id = 'ocr-subtitle-overlay';
   overlay.style.position = 'fixed';
   overlay.style.top = '0';
   overlay.style.left = '0';
@@ -36,6 +45,7 @@ function startRegionSelection() {
   
   // Create selection element
   selectionElement = document.createElement('div');
+  selectionElement.id = 'ocr-subtitle-selection';
   selectionElement.style.position = 'fixed';
   selectionElement.style.border = '2px dashed #fff';
   selectionElement.style.backgroundColor = 'rgba(0, 120, 255, 0.2)';
@@ -45,6 +55,7 @@ function startRegionSelection() {
   
   // Add instructions
   const instructions = document.createElement('div');
+  instructions.id = 'ocr-subtitle-instructions';
   instructions.style.position = 'fixed';
   instructions.style.top = '20px';
   instructions.style.left = '50%';
@@ -55,13 +66,16 @@ function startRegionSelection() {
   instructions.style.borderRadius = '5px';
   instructions.style.fontFamily = 'Arial, sans-serif';
   instructions.style.zIndex = '2147483649';
-  instructions.textContent = 'Select the subtitle area by clicking and dragging';
+  instructions.textContent = 'Select the subtitle area by clicking and dragging, then release to confirm';
   document.body.appendChild(instructions);
   
   // Mouse event handlers
   overlay.addEventListener('mousedown', handleMouseDown);
   overlay.addEventListener('mousemove', handleMouseMove);
   overlay.addEventListener('mouseup', handleMouseUp);
+  
+  // Also add ESC key handler to cancel selection
+  document.addEventListener('keydown', handleKeyDown);
   
   function handleMouseDown(e) {
     isSelecting = true;
@@ -84,23 +98,62 @@ function startRegionSelection() {
     if (!isSelecting) return;
     isSelecting = false;
     
-    // Remove event listeners and overlay
-    overlay.removeEventListener('mousedown', handleMouseDown);
-    overlay.removeEventListener('mousemove', handleMouseMove);
-    overlay.removeEventListener('mouseup', handleMouseUp);
-    
-    document.body.removeChild(overlay);
-    document.body.removeChild(instructions);
-    document.body.removeChild(selectionElement);
-    
     // Calculate the selected region
     const region = calculateRegion();
     
-    // Save the selected region
-    saveRegion(region);
+    // Only proceed if the selected area is valid (not too small)
+    if (region.width > 10 && region.height > 10) {
+      cleanupSelectionUI();
+      
+      // Save the selected region
+      saveRegion(region);
+      
+      // Capture screenshot of the region
+      captureRegion(region);
+    } else {
+      // If selection is too small, show error message
+      const errorMsg = document.createElement('div');
+      errorMsg.style.position = 'fixed';
+      errorMsg.style.top = '80px';
+      errorMsg.style.left = '50%';
+      errorMsg.style.transform = 'translateX(-50%)';
+      errorMsg.style.padding = '10px 20px';
+      errorMsg.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
+      errorMsg.style.color = 'white';
+      errorMsg.style.borderRadius = '5px';
+      errorMsg.style.fontFamily = 'Arial, sans-serif';
+      errorMsg.style.zIndex = '2147483649';
+      errorMsg.textContent = 'Selection too small, please try again';
+      document.body.appendChild(errorMsg);
+      
+      // Remove error message after 2 seconds
+      setTimeout(() => {
+        document.body.removeChild(errorMsg);
+      }, 2000);
+    }
+  }
+  
+  function handleKeyDown(e) {
+    // ESC key to cancel selection
+    if (e.key === 'Escape') {
+      cleanupSelectionUI();
+    }
+  }
+  
+  function cleanupSelectionUI() {
+    // Remove event listeners
+    overlay.removeEventListener('mousedown', handleMouseDown);
+    overlay.removeEventListener('mousemove', handleMouseMove);
+    overlay.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener('keydown', handleKeyDown);
     
-    // Capture screenshot of the region
-    captureRegion(region);
+    // Remove UI elements
+    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+    if (document.body.contains(instructions)) document.body.removeChild(instructions);
+    if (document.body.contains(selectionElement)) document.body.removeChild(selectionElement);
+    
+    // Reset selection state
+    isSelectionActive = false;
   }
   
   function updateSelectionElement() {

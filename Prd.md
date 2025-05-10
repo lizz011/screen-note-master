@@ -71,14 +71,6 @@ The extension allows users to press a keyboard shortcut to capture the subtitle 
 - Text recognition accuracy: > 85%
 - Extension load time: < 500ms
 
-## 7. Future Considerations (Post V0.1)
-- Vocabulary highlighting feature
-- Word saving/collection functionality
-- Support for additional languages
-- Adjustable subtitle region
-- Text export options
-- Integration with language learning tools
-
 ## 8. Success Metrics
 - User adoption rate
 - OCR accuracy measurements
