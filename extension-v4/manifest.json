@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "OCR Subtitle Recognition",
+  "version": "0.1.0",
+  "description": "Capture and recognize text from video subtitles",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "commands": {
+    "capture-subtitle": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S"
+      },
+      "description": "Capture the subtitle area"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "styles.css", "tesseract/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 
