@@ -32,7 +32,7 @@ The extension allows users to press a keyboard shortcut to capture the subtitle 
   - Implement screenshot mechanism compatible with webpage content (canvas or getDisplayMedia)
   - Ensure the capture process is fast and doesn't interrupt video playback
 
-### 5.2 OCR Text Recognition
+<!-- ### 5.2 OCR Text Recognition
 - **Priority:** High
 - **Description:** Process the captured image to extract subtitle text
 - **Requirements:**
@@ -49,7 +49,7 @@ The extension allows users to press a keyboard shortcut to capture the subtitle 
   - Create a button to manually trigger screenshot + OCR process
   - Display the recognized text in a clean, readable format
   - Provide basic instructions for first-time users
-  - Design a simple, intuitive UI using Tailwind CSS and Shadcn UI
+  - Design a simple, intuitive UI using Tailwind CSS and Shadcn UI -->
 
 ## 6. Technical Requirements
 

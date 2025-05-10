@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCR Subtitle Recognition</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OCR Subtitle Recognition</h1>
+    </header>
+    
+    <main>
+      <div class="controls">
+        <button id="capture-btn" class="btn primary">Capture Subtitle</button>
+        <button id="reset-btn" class="btn secondary">Reset Region</button>
+      </div>
+      
+      <div class="status-section">
+        <p id="status-message">Press Ctrl+Shift+S or click the button to capture subtitles.</p>
+      </div>
+      
+      <div class="result-section">
+        <div class="result-container">
+          <div id="preview-container">
+            <img id="preview-image" alt="No screenshot captured" style="display: none;">
+          </div>
+          <div id="text-result">
+            <p class="no-result">Captured text will appear here</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>OCR Subtitle Recognition v0.1.0</p>
+    </footer>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html> 
