@@ -1,5 +1,9 @@
+// Background script for OCR Subtitle Recognition Extension
+
 // Listen for keyboard shortcut
 chrome.commands.onCommand.addListener((command) => {
+  console.log('Command received:', command);
+  
   if (command === 'capture-subtitle') {
     // When shortcut is pressed, send message to the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -26,6 +30,22 @@ chrome.commands.onCommand.addListener((command) => {
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('Background script received message:', message);
+  
+  // Handle request to capture visible tab
+  if (message.action === 'captureVisibleTab') {
+    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error capturing tab:', chrome.runtime.lastError);
+        sendResponse({ status: 'error', error: chrome.runtime.lastError });
+      } else {
+        console.log('Tab captured successfully');
+        sendResponse({ status: 'success', dataUrl: dataUrl });
+      }
+    });
+    return true; // Indicates async response
+  }
+  
   // When a region is saved
   if (message.action === 'saveRegion') {
     chrome.storage.local.set({ subtitleRegion: message.region }, () => {
