@@ -7,7 +7,7 @@ Frontend Framework: Next.js is now explicitly defined as the primary framework f
 Component Library: Added shadcn/ui as a separate component library (previously it was combined with Tailwind)
 Styling: Tailwind CSS is clearly defined for utility-first styling
 State Management: Jotai is now firmly included (removed the "if needed" qualifier)
-Database: Added Vercel Neon as the PostgreSQL serverless database solution for storing user preferences and potentially saved subtitles
+Database: first step local storage, later added Vercel Neon as the PostgreSQL serverless database solution for storing user preferences and potentially saved subtitles
 
 
-Everytime create a extension folder to load and test in chrome, pleae add suffix "-v" + number in ascending order, lets say now i alr have extionsion-v1, next one create extionsion-v2
+Everytime create a extension folder to load and test in chrome, pleae add suffix "-v" + number in ascending order, lets say now i alr have extension, then create extionsion-v1, next one create extionsion-v2
