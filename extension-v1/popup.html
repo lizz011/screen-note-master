@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteShot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>NoteShot</h1>
+    </header>
+    
+    <main>
+      <div class="controls">
+        <button id="capture-btn" class="btn primary">Take Screenshot</button>
+        <button id="open-editor-btn" class="btn secondary">Open Editor</button>
+      </div>
+      
+      <div class="status-section">
+        <p id="status-message">Press Ctrl+Shift+S or click the button to take a screenshot.</p>
+      </div>
+      
+      <div class="quick-info">
+        <p>Screenshots: <span id="screenshot-count">0</span></p>
+        <p>Last capture: <span id="last-capture-time">Never</span></p>
+      </div>
+    </main>
+    
+    <footer>
+      <p>NoteShot v0.1.0</p>
+    </footer>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html> 

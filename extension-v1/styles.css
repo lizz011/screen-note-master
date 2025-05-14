@@ -1,0 +1,173 @@
+/* Styles for NoteShot Extension */
+
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.container {
+  width: 320px;
+  min-height: 200px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* Main content */
+main {
+  margin-bottom: 15px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  flex: 1;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.primary:hover {
+  background-color: #1d4ed8;
+}
+
+.secondary {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+.secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.status-section {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.quick-info {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.quick-info p {
+  margin-bottom: 5px;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Editor page specific styles */
+.editor-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.editor-logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.export-btn {
+  padding: 8px 16px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.export-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.screenshot-container {
+  margin-bottom: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.screenshot-image {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.markdown-container {
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+} 

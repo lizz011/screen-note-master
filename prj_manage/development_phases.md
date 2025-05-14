@@ -2,23 +2,41 @@
 
 This document outlines the detailed development phases, steps, and expected results for implementing the NoteShot browser extension MVP as described in the PRD.
 
-## Phase 1: Extension Framework and Basic Structure (1-2 days)
+## Phase 1: Extension Framework and Basic Structure 
+## Phase 2: Screenshot Implementation and Display 
 
 ### Steps
-1. **Create extension-v2 folder structure**
+1. **Create extension folder structure**
    - Set up manifest.json with appropriate permissions (tabs, storage, activeTab)
    - Create background.js for event handling
-   - Set up popup.html/js for extension UI
+   - Set up popup.html/js for extension UI - reuse existing popup.html/js from extension-screenshot folder
    - Configure content scripts for webpage interaction
 
-2. **Set up keyboard shortcut configuration**
-   - Define shortcut in manifest.json (e.g., Ctrl+Shift+S)
-   - Create event listener in background.js to capture shortcut
-
-3. **Create basic editor.html page**
+2. **Create basic editor.html page**
    - Create standalone HTML page for note editing
    - Set up basic HTML structure with placeholders for screenshots and notes
    - Add basic navigation bar with logo and export button placeholder
+
+
+3. **Reuse existing screenshot functionality**
+   - Analyze and extract screenshot code from existing extension-screenshot folder
+   - Implement screenshot capture mechanism in content.js
+   - Add function to communicate between content script and background script
+
+4. **Set up keyboard shortcut configuration**
+   - Define shortcut in manifest.json (e.g., Ctrl+Shift+S)
+   - Create event listener in background.js to capture shortcut
+
+5. **Screenshot data transmission**
+   - Create method to convert screenshot to base64
+   - Implement storage mechanism using localStorage to save screenshot data
+   - Create messaging system between extension and editor page
+
+6. **Base64 image display in editor**
+   - Implement logic in editor.js to retrieve images from localStorage
+   - Create DOM elements to display images in the editor
+   - Add basic styling for image display
+
 
 ### Expected Results
 - Extension loads successfully in Chrome
@@ -26,7 +44,7 @@ This document outlines the detailed development phases, steps, and expected resu
 - Basic navigation from extension popup to standalone editor page works
 - Extension folder structure matches the following pattern:
 ```
-extension-v x /
+extension-v x /   can be different during practice, its just for reference
 ├── manifest.json
 ├── background.js
 ├── popup.html
@@ -39,30 +57,12 @@ extension-v x /
     └── icon128.png (etc.)
 ```
 
-## Phase 2: Screenshot Implementation and Display (2-3 days)
-
-### Steps
-1. **Reuse existing screenshot functionality**
-   - Analyze and extract screenshot code from existing extension
-   - Implement screenshot capture mechanism in content.js
-   - Add function to communicate between content script and background script
-
-2. **Screenshot data transmission**
-   - Create method to convert screenshot to base64
-   - Implement storage mechanism using localStorage to save screenshot data
-   - Create messaging system between extension and editor page
-
-3. **Base64 image display in editor**
-   - Implement logic in editor.js to retrieve images from localStorage
-   - Create DOM elements to display images in the editor
-   - Add basic styling for image display
-
-### Expected Results
 - User can take screenshots using keyboard shortcut
 - Screenshots are successfully converted to base64 format
 - Screenshot data is saved in localStorage
 - Editor page displays all captured screenshots in chronological order
 - Images are properly sized and styled in the editor page
+
 
 ## Phase 3: Markdown Editor Integration (1-2 days)
 
