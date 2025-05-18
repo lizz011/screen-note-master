@@ -53,10 +53,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.storage.local.set({ screenshots: screenshots }, () => {
         console.log('Screenshot saved to storage');
         
-        // Open editor page with the new screenshot
-        chrome.tabs.create({ url: 'editor.html' });
-        
-        sendResponse({ status: 'success' });
+        // Check if editor page is already open
+        chrome.tabs.query({url: chrome.runtime.getURL("editor.html")}, (tabs) => {
+          if (tabs.length > 0) {
+            // Editor page exists, refresh it
+            chrome.tabs.reload(tabs[0].id);
+            // Focus on the editor tab
+            chrome.tabs.update(tabs[0].id, {active: true});
+          } else {
+            // No editor page exists, create a new one
+            chrome.tabs.create({ url: 'editor.html' });
+          }
+          
+          sendResponse({ status: 'success' });
+        });
       });
     });
     

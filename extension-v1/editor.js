@@ -36,8 +36,8 @@ function loadScreenshots() {
       return;
     }
     
-    // Sort screenshots by timestamp (newest first)
-    screenshots.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    // Sort screenshots by timestamp (oldest first)
+    screenshots.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     
     // Create DOM elements for each screenshot
     screenshots.forEach((screenshot) => {
@@ -55,6 +55,11 @@ function createScreenshotElement(screenshot) {
   const container = document.createElement('div');
   container.className = 'screenshot-container';
   container.id = screenshot.id;
+  
+  // Create timestamp display
+  const timestampDisplay = document.createElement('div');
+  timestampDisplay.className = 'screenshot-timestamp';
+  timestampDisplay.textContent = `Captured on: ${new Date(screenshot.timestamp).toLocaleString()}`;
   
   // Create image element
   const img = document.createElement('img');
@@ -78,8 +83,9 @@ function createScreenshotElement(screenshot) {
   });
   
   // Append elements to container
-  notesContainer.appendChild(textarea);
+  container.appendChild(timestampDisplay);
   container.appendChild(img);
+  notesContainer.appendChild(textarea);
   container.appendChild(notesContainer);
   
   return container;
