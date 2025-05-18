@@ -9,16 +9,19 @@
 
 @keyframes highlight {
   0% {
-    background-color: rgba(59, 130, 246, 0.1);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    background-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    transform: translateY(-3px);
   }
   70% {
-    background-color: rgba(59, 130, 246, 0.1);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    background-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    transform: translateY(-3px);
   }
   100% {
     background-color: transparent;
     box-shadow: none;
+    transform: translateY(0);
   }
 }
 

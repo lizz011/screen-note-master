@@ -13,6 +13,21 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Handle preflight request
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -30,13 +45,14 @@ export default function handler(
     // For this MVP, we'll just respond with a success message and URL
     // The actual storage happens client-side in localStorage
     
-    // Return success with a URL to view the screenshot
-    const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}?id=${screenshot.id}`;
+    // Return success with just the base URL, not a specific ID parameter
+    const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}`;
     
     res.status(200).json({ 
       success: true, 
       message: 'Screenshot received successfully',
-      viewUrl 
+      viewUrl,
+      screenshotId: screenshot.id
     });
   } catch (error) {
     console.error('Error processing screenshot:', error);

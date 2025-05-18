@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "NoteShot",
   "version": "0.1.0",
-  "description": "Take screenshots and add Markdown notes for later review",
+  "description": "Take screenshots and send to NoteShot web app for notes and organization",
   "permissions": [
     "activeTab",
     "storage",
@@ -10,7 +10,7 @@
     "tabs"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "http://localhost:3000/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -39,7 +39,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "editor.html", "styles.css"],
+      "resources": ["popup.html", "styles.css"],
       "matches": ["<all_urls>"]
     }
   ]

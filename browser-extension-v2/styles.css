@@ -99,6 +99,7 @@ main {
   margin-top: 15px;
   font-size: 13px;
   color: #6b7280;
+  line-height: 1.5;
 }
 
 .quick-info p {
@@ -113,86 +114,4 @@ footer {
   text-align: center;
   font-size: 12px;
   color: #9ca3af;
-}
-
-/* Editor page specific styles */
-.editor-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  width: 90%;
-}
-
-.editor-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.editor-logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: #2563eb;
-}
-
-.export-btn {
-  padding: 8px 16px;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.export-btn:hover {
-  background-color: #1d4ed8;
-}
-
-.screenshot-container {
-  margin-bottom: 30px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.screenshot-image {
-  width: 100%;
-  max-width: 100%;
-  display: block;
-}
-
-.screenshot-timestamp {
-  padding: 10px 15px;
-  font-size: 14px;
-  color: #6b7280;
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-  border-radius: 8px 8px 0 0;
-}
-
-.markdown-container {
-  padding: 20px;
-  border-top: 1px solid #e5e7eb;
-  width: 100%;
-}
-
-.markdown-editor {
-  width: 100%;
-  min-height: 150px;
-  padding: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  resize: vertical;
-  margin-top: 10px;
-  margin-bottom: 10px;
 } 

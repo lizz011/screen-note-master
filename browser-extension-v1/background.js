@@ -96,11 +96,9 @@ function saveScreenshotAndOpenEditor(screenshotData, sendResponse) {
           // Tab doesn't exist anymore, create a new one
           createEditorTab(data.viewUrl);
         } else {
-          // Tab exists, refresh it
-          chrome.tabs.update(editorTabId, { 
-            active: true,
-            url: data.viewUrl
-          });
+          // Tab exists, refresh it and send the screenshot data
+          chrome.tabs.update(editorTabId, { active: true });
+          sendToWebAppLocalStorage(screenshotData);
         }
       });
     } else {
@@ -116,6 +114,7 @@ function saveScreenshotAndOpenEditor(screenshotData, sendResponse) {
     // Even if API fails, we'll open the web app with our locally saved data
     if (editorTabId) {
       chrome.tabs.update(editorTabId, { active: true });
+      sendToWebAppLocalStorage(screenshotData);
     } else {
       createEditorTab(WEB_APP_URL);
     }
@@ -167,34 +166,6 @@ function saveToLocalStorage(screenshotData) {
 function sendToWebAppLocalStorage(screenshotData) {
   // Check if editor tab is open
   if (editorTabId) {
-    // Inject script to update localStorage
-    const code = `
-      (function() {
-        try {
-          // Get existing screenshots from localStorage
-          const storedData = localStorage.getItem('screenshots');
-          const screenshots = storedData ? JSON.parse(storedData) : [];
-          
-          // Add new screenshot
-          screenshots.push(${JSON.stringify(screenshotData)});
-          
-          // Save back to localStorage
-          localStorage.setItem('screenshots', JSON.stringify(screenshots));
-          
-          // Dispatch a custom event to notify the app
-          window.dispatchEvent(new CustomEvent('screenshotAdded', { 
-            detail: ${JSON.stringify(screenshotData)}
-          }));
-          
-          console.log('Screenshot added to web app localStorage');
-          return true;
-        } catch (error) {
-          console.error('Error updating localStorage:', error);
-          return false;
-        }
-      })();
-    `;
-    
     chrome.scripting.executeScript({
       target: { tabId: editorTabId },
       function: function(screenshotData) {
@@ -203,18 +174,20 @@ function sendToWebAppLocalStorage(screenshotData) {
           const storedData = localStorage.getItem('screenshots');
           const screenshots = storedData ? JSON.parse(storedData) : [];
           
-          // Add new screenshot
-          screenshots.push(screenshotData);
-          
-          // Save back to localStorage
-          localStorage.setItem('screenshots', JSON.stringify(screenshots));
-          
-          // Dispatch a custom event to notify the app
-          window.dispatchEvent(new CustomEvent('screenshotAdded', { 
-            detail: screenshotData
-          }));
-          
-          console.log('Screenshot added to web app localStorage');
+          // Add new screenshot if it doesn't exist
+          if (!screenshots.some(s => s.id === screenshotData.id)) {
+            screenshots.push(screenshotData);
+            
+            // Save back to localStorage
+            localStorage.setItem('screenshots', JSON.stringify(screenshots));
+            
+            // Dispatch a custom event to notify the app
+            window.dispatchEvent(new CustomEvent('screenshotAdded', { 
+              detail: screenshotData
+            }));
+            
+            console.log('Screenshot added to web app localStorage');
+          }
           return true;
         } catch (error) {
           console.error('Error updating localStorage:', error);

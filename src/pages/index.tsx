@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Screenshot from '../components/Screenshot';
@@ -15,6 +15,7 @@ interface ScreenshotData {
 export default function Home() {
   const [screenshots, setScreenshots] = useState<ScreenshotData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newScreenshotId, setNewScreenshotId] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
 
@@ -49,14 +50,36 @@ export default function Home() {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'screenshots') {
         console.log('localStorage changed, reloading screenshots');
-        loadScreenshots();
+        try {
+          const newData = e.newValue ? JSON.parse(e.newValue) : [];
+          setScreenshots(newData);
+        } catch (error) {
+          console.error('Error parsing localStorage data:', error);
+          loadScreenshots();
+        }
       }
     };
     
     // Listen for custom event from the browser extension
     const handleScreenshotAdded = (e: CustomEvent) => {
       console.log('Screenshot added event received', e.detail);
-      loadScreenshots();
+      try {
+        // Get current screenshots
+        const storedData = localStorage.getItem('screenshots');
+        const currentScreenshots = storedData ? JSON.parse(storedData) : [];
+        
+        // Add new screenshot if it doesn't exist
+        if (e.detail && !currentScreenshots.some((s: ScreenshotData) => s.id === e.detail.id)) {
+          currentScreenshots.push(e.detail);
+          setScreenshots(currentScreenshots);
+          
+          // Set the new screenshot ID to trigger scrolling
+          setNewScreenshotId(e.detail.id);
+        }
+      } catch (error) {
+        console.error('Error handling new screenshot:', error);
+        loadScreenshots();
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -68,11 +91,13 @@ export default function Home() {
     };
   }, [loadScreenshots]);
 
-  // When a specific ID is provided in the URL, scroll to that screenshot
+  // When a specific ID is provided in the URL or a new screenshot is added, scroll to that screenshot
   useEffect(() => {
-    if (id && screenshots.length > 0) {
-      console.log('Scrolling to screenshot:', id);
-      const element = document.getElementById(id as string);
+    const targetId = id || newScreenshotId;
+    
+    if (targetId && screenshots.length > 0) {
+      console.log('Scrolling to screenshot:', targetId);
+      const element = document.getElementById(targetId as string);
       if (element) {
         // Add a slight delay to ensure the DOM is ready
         setTimeout(() => {
@@ -82,12 +107,17 @@ export default function Home() {
           setTimeout(() => {
             element.classList.remove('highlight');
           }, 2000);
+          
+          // Clear the new screenshot ID after scrolling
+          if (newScreenshotId) {
+            setNewScreenshotId(null);
+          }
         }, 300);
       } else {
-        console.log('Screenshot element not found:', id);
+        console.log('Screenshot element not found:', targetId);
       }
     }
-  }, [id, screenshots]);
+  }, [id, newScreenshotId, screenshots]);
 
   const handleSaveNotes = (id: string, notes: string) => {
     const updatedScreenshots = screenshots.map(screenshot => 
