@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Screenshot from '../components/Screenshot';
@@ -18,40 +18,73 @@ export default function Home() {
   const router = useRouter();
   const { id } = router.query;
 
+  // Function to load screenshots from localStorage
+  const loadScreenshots = useCallback(() => {
+    console.log('Loading screenshots from localStorage');
+    try {
+      const storedData = localStorage.getItem('screenshots');
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        // Sort by timestamp (oldest first)
+        const sorted = parsed.sort((a: ScreenshotData, b: ScreenshotData) => 
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+        setScreenshots(sorted);
+        console.log('Loaded screenshots:', sorted.length);
+      } else {
+        console.log('No screenshots found in localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading screenshots:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Initial load
   useEffect(() => {
-    // Load screenshots from localStorage
-    const loadScreenshots = () => {
-      try {
-        const storedData = localStorage.getItem('screenshots');
-        if (storedData) {
-          const parsed = JSON.parse(storedData);
-          // Sort by timestamp (oldest first)
-          const sorted = parsed.sort((a: ScreenshotData, b: ScreenshotData) => 
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-          );
-          setScreenshots(sorted);
-        }
-      } catch (error) {
-        console.error('Error loading screenshots:', error);
-      } finally {
-        setLoading(false);
+    loadScreenshots();
+
+    // Listen for storage changes from other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'screenshots') {
+        console.log('localStorage changed, reloading screenshots');
+        loadScreenshots();
       }
     };
+    
+    // Listen for custom event from the browser extension
+    const handleScreenshotAdded = (e: CustomEvent) => {
+      console.log('Screenshot added event received', e.detail);
+      loadScreenshots();
+    };
 
-    loadScreenshots();
-  }, []);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('screenshotAdded', handleScreenshotAdded as EventListener);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('screenshotAdded', handleScreenshotAdded as EventListener);
+    };
+  }, [loadScreenshots]);
 
   // When a specific ID is provided in the URL, scroll to that screenshot
   useEffect(() => {
     if (id && screenshots.length > 0) {
+      console.log('Scrolling to screenshot:', id);
       const element = document.getElementById(id as string);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Add highlighting effect
-        element.classList.add('highlight');
+        // Add a slight delay to ensure the DOM is ready
         setTimeout(() => {
-          element.classList.remove('highlight');
-        }, 2000);
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Add highlighting effect
+          element.classList.add('highlight');
+          setTimeout(() => {
+            element.classList.remove('highlight');
+          }, 2000);
+        }, 300);
+      } else {
+        console.log('Screenshot element not found:', id);
       }
     }
   }, [id, screenshots]);
@@ -119,6 +152,7 @@ export default function Home() {
         <button 
           onClick={handleExport}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          disabled={screenshots.length === 0}
         >
           Export Markdown
         </button>
