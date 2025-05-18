@@ -10,5 +10,5 @@ State Management: Jotai is now firmly included (removed the "if needed" qualifie
 Database: first step local storage, later added Vercel Neon as the PostgreSQL serverless database solution for storing user preferences and potentially saved subtitles
 
 Since its a two-system application.
-For browser externsion part: Everytime create a extension folder to load and test in chrome, pleae add suffix "-v" + number in ascending order, lets say now i alr have extension, then create extionsion-v1, next one create extionsion-v2
+For browser externsion part: Everytime create a extension folder to load and test in chrome, pleae add suffix "-v" + number in ascending order, lets say now i alr have browser-extionsion-v1, next one create browser-extionsion-v2
 For web app in node.js: edit in src
