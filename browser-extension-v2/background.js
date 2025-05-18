@@ -71,7 +71,23 @@ function saveScreenshotAndOpenEditor(screenshotData, sendResponse) {
     console.error('Error saving to localStorage:', error);
   }
   
-  // First, check if there are any existing tabs with the web app
+  // First, try making a direct API call to ensure data is sent
+  fetch(API_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(screenshotData)
+  })
+  .then(response => {
+    console.log('API direct response status:', response.status);
+    return response.json();
+  })
+  .catch(error => {
+    console.warn('Direct API call failed, will try through tab:', error);
+  });
+  
+  // Then, check if there are any existing tabs with the web app
   chrome.tabs.query({ url: "http://localhost:3000/*" }, (tabs) => {
     if (tabs && tabs.length > 0) {
       // Web app is already open, update editorTabId and send data
@@ -97,6 +113,8 @@ function saveScreenshotAndOpenEditor(screenshotData, sendResponse) {
  * Send the screenshot to the API and handle response
  */
 function sendScreenshotToAPI(screenshotData, sendResponse) {
+  console.log('Sending screenshot to API:', API_ENDPOINT);
+  
   fetch(API_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -105,6 +123,7 @@ function sendScreenshotToAPI(screenshotData, sendResponse) {
     body: JSON.stringify(screenshotData)
   })
   .then(response => {
+    console.log('API response status:', response.status);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -188,7 +207,10 @@ function saveToLocalStorage(screenshotData) {
  * Update the localStorage in the web app tab
  */
 function updateWebAppLocalStorage(screenshotData) {
-  if (!editorTabId) return;
+  if (!editorTabId) {
+    console.error('No editor tab ID available');
+    return;
+  }
   
   console.log('Updating localStorage in web app tab:', editorTabId);
   
@@ -200,16 +222,25 @@ function updateWebAppLocalStorage(screenshotData) {
         console.log('Executing localStorage update in web app context');
         
         // Get existing screenshots from localStorage
-        const storedData = localStorage.getItem('screenshots');
         let screenshots = [];
-        
-        if (storedData) {
-          try {
+        try {
+          const storedData = localStorage.getItem('screenshots');
+          if (storedData) {
             screenshots = JSON.parse(storedData);
-          } catch (e) {
-            console.error('Error parsing localStorage data:', e);
-            screenshots = [];
+            console.log(`Found ${screenshots.length} existing screenshots in localStorage`);
+          } else {
+            console.log('No existing screenshots in localStorage');
           }
+        } catch (parseError) {
+          console.error('Error parsing localStorage data:', parseError);
+          // Reset to empty array if parsing fails
+          screenshots = [];
+        }
+        
+        // Ensure screenshots is an array
+        if (!Array.isArray(screenshots)) {
+          console.warn('Screenshots data is not an array, resetting');
+          screenshots = [];
         }
         
         // Check if this screenshot already exists
@@ -227,20 +258,21 @@ function updateWebAppLocalStorage(screenshotData) {
             detail: data
           }));
           
-          console.log('Screenshot added to web app localStorage');
+          console.log('Screenshot added to web app localStorage, total count:', screenshots.length);
+          return { success: true, message: 'Screenshot added' };
         } else {
           console.log('Screenshot already exists in localStorage, not adding duplicate');
+          return { success: true, message: 'Screenshot already exists' };
         }
-        
-        return true;
       } catch (error) {
         console.error('Error in localStorage update:', error);
-        return false;
+        return { success: false, error: error.toString() };
       }
     },
     args: [screenshotData]
-  }).then(() => {
-    console.log('Successfully executed script to update localStorage');
+  }).then((results) => {
+    const result = results && results[0] ? results[0].result : null;
+    console.log('Script execution result:', result);
   }).catch(error => {
     console.error('Error executing script to update localStorage:', error);
   });

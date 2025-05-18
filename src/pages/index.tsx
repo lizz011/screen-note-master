@@ -24,12 +24,17 @@ export default function Home() {
     console.log('Loading screenshots from localStorage');
     try {
       const storedData = localStorage.getItem('screenshots');
+      console.log('Raw localStorage data:', storedData ? storedData.substring(0, 100) + '...' : 'null');
+      
       if (storedData) {
         const parsed = JSON.parse(storedData);
+        console.log('Parsed screenshots count:', parsed.length);
+        
         // Sort by timestamp (oldest first)
         const sorted = parsed.sort((a: ScreenshotData, b: ScreenshotData) => 
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
+        
         setScreenshots(sorted);
         console.log('Loaded screenshots:', sorted.length);
       } else {
@@ -45,6 +50,42 @@ export default function Home() {
   // Initial load
   useEffect(() => {
     loadScreenshots();
+
+    // Check if there's a new screenshot available from API
+    const checkForNewScreenshot = async () => {
+      try {
+        const response = await fetch('/api/note');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.screenshot) {
+            console.log('Retrieved new screenshot from API:', data.screenshot.id);
+            
+            // Add to localStorage
+            const storedData = localStorage.getItem('screenshots');
+            const screenshots = storedData ? JSON.parse(storedData) : [];
+            
+            // Check if it already exists
+            if (!screenshots.some((s: ScreenshotData) => s.id === data.screenshot.id)) {
+              screenshots.push(data.screenshot);
+              localStorage.setItem('screenshots', JSON.stringify(screenshots));
+              
+              // Update state
+              setScreenshots(screenshots);
+              setNewScreenshotId(data.screenshot.id);
+              console.log('Added new screenshot from API to localStorage');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking for new screenshots:', error);
+      }
+    };
+    
+    // Check immediately on load
+    checkForNewScreenshot();
+    
+    // Check periodically
+    const intervalId = setInterval(checkForNewScreenshot, 3000);
 
     // Listen for storage changes from other tabs
     const handleStorageChange = (e: StorageEvent) => {
@@ -70,11 +111,19 @@ export default function Home() {
         
         // Add new screenshot if it doesn't exist
         if (e.detail && !currentScreenshots.some((s: ScreenshotData) => s.id === e.detail.id)) {
+          console.log('Adding new screenshot to state from event:', e.detail.id);
           currentScreenshots.push(e.detail);
+          
+          // Save to localStorage
+          localStorage.setItem('screenshots', JSON.stringify(currentScreenshots));
+          
+          // Update state
           setScreenshots(currentScreenshots);
           
           // Set the new screenshot ID to trigger scrolling
           setNewScreenshotId(e.detail.id);
+        } else {
+          console.log('Screenshot already exists or no detail provided');
         }
       } catch (error) {
         console.error('Error handling new screenshot:', error);
@@ -88,6 +137,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('screenshotAdded', handleScreenshotAdded as EventListener);
+      clearInterval(intervalId);
     };
   }, [loadScreenshots]);
 
